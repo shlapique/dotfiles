@@ -1,0 +1,13 @@
+alias open='xdg-open '
+alias copy='xclip -selection clipboard '
+alias seo='xdg-open "$(fzf)" '
+alias shutdown='sudo shutdown -h now'
+alias scim='sc-im '
+
+alias yt='youtube-dl -add-metadata -ic' #download youtube video
+alias yta='youtube-dl -xic' #download youtube audio only
+
+alias pwtop='pw-top'
+
+# dotfiles managment
+alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
