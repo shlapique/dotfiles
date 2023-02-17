@@ -8,7 +8,7 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'junegunn/goyo.vim'
-Plugin 'dense-analysis/ale'
+Plugin 'tpope/vim-commentary'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -28,6 +28,13 @@ syntax enable
 
 autocmd FileType make setlocal noexpandtab
 autocmd FileType make setlocal shiftwidth=8
+
+" for autoclose braces
+"inoremap { {}<Esc>ha
+"inoremap ( ()<Esc>ha
+"inoremap [ []<Esc>ha
+"inoremap ' ''<Esc>ha
+"inoremap ` ``<Esc>ha
 
 " goyo 
 map <leader>f :Goyo \| set linebreak<CR>

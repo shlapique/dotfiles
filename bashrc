@@ -12,6 +12,8 @@
 
 test -s ~/.alias && . ~/.alias || true
 
+export PATH=$PATH:~/.scripts/
+
 #####
 face="$(shuf -e -n 1 🐸 🐈 🌞 🧐 🛀 🐷 🐰 👞 👑 🌈)"
 PS1="${face}:\W> "
