@@ -9,10 +9,6 @@ alias yta='youtube-dl -xic' #download youtube audio only
 
 alias pwtop='pw-top'
 
-# dotfiles managment
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-
 #for qemu
-#for linux
-alias qql='echo "qemu-system-x86-64 -enable-kvm -cdrom iso.iso -boot menu=on -drive file=Image.img -m 2G -cpu host"'
-alias qqw='echo  "qemu-system-x86_64 -hda win10.img -boot c -enable-kvm -cpu host -m 4G -vga std -net nic,model=e1000 -net user -usbdevice tablet"'
+alias qql='echo -n "qemu-system-x86_64 -enable-kvm -cdrom iso.iso -boot menu=on -drive file=Image.img -m 2G -cpu host"'
+alias qqw='echo -n "qemu-system-x86_64 -hda win10.img -boot c -enable-kvm -cpu host -m 4G -vga std -net nic,model=e1000 -net user -usbdevice tablet"'
