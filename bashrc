@@ -12,12 +12,19 @@
 
 test -s ~/.alias && . ~/.alias || true
 
+export PROMPT_COMMAND="history -a; history -n"
+
+# append to history file
+shopt -s histappend
+
 export PATH=$PATH:~/.scripts/
 export EDITOR=/usr/bin/vim
 export HISTSIZE=1000000
 export HISTFILESIZE=4096000
+
 # ignore common commands
 export HISTIGNORE=":pwd:id:uptime:resize:ls:clear:history:htop:top:glances:"
+
 # ignore spaces before commands an duplicate entries
 export HISTCONTROL=ignoredups
 
