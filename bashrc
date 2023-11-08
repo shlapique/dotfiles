@@ -11,6 +11,7 @@
 # ridden in every subshell.
 
 test -s ~/.alias && . ~/.alias || true
+test -s ~/.keys && . ~/.keys || true
 
 export PROMPT_COMMAND="history -a; history -n"
 
@@ -18,6 +19,7 @@ export PROMPT_COMMAND="history -a; history -n"
 shopt -s histappend
 
 export PATH=$PATH:~/.scripts/
+export BOOKMARKS=$HOME/.bookmarks
 export EDITOR=/usr/bin/vim
 export HISTSIZE=1000000
 export HISTFILESIZE=4096000
@@ -29,5 +31,5 @@ export HISTIGNORE=":pwd:id:uptime:resize:ls:clear:history:htop:top:glances:"
 export HISTCONTROL=ignoredups
 
 #####
-face="$(shuf -e -n 1 🐸 🐈 🌞 🧐 🛀 🐷 🐰 👞 👑 🌈 👷 🐠 🍥 🫠 🌜 🐭 🥸 🥰 🌴 🫴)"
+face="$(shuf -e -n 1 🐸 🐈 🌞 🧐 🛀 🐷 🐰 👞 👑 🌈 👷 🐠 🍥 🫠 🌜 🐭 🥸 🥰 🌴 🫴 🎈)"
 PS1="${face}:\W> "

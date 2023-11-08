@@ -4,7 +4,7 @@ alias seo='xdg-open "$(fzf)" '
 alias shutdown='sudo shutdown -h now'
 alias scim='sc-im '
 
-alias yt='youtube-dl -add-metadata -ic' #download youtube video
+alias yt='yt-dlp ' #download youtube video
 alias yta='youtube-dl -xic' #download youtube audio only
 
 alias pwtop='pw-top'
@@ -14,3 +14,6 @@ alias qql='echo -n "qemu-system-x86_64 -enable-kvm -cdrom iso.iso -boot menu=on 
 alias qqw='echo -n "qemu-system-x86_64 -hda win10.img -boot c -enable-kvm -cpu host -m 4G -vga std -net nic,model=e1000 -net user -usbdevice tablet"'
 alias qqlssh='echo -n "qemu-system-x86_64 -enable-kvm -drive file=Image.img -m 2G -cpu host -net nic -net user,hostfwd=tcp::2222-:22"'
 alias mrg='echo -n "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=result.pdf pdf1.pdf pdf2.pdf"'
+alias splt='echo -n "gs -q -dNOPAUSE -dBATCH -sDEVICE=jpeg -r300 -sOutputFile=output_%03d.jpg kirill.pdf"'
+
+alias lf='lfub '
