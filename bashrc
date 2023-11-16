@@ -21,6 +21,9 @@ shopt -s histappend
 export PATH=$PATH:~/.scripts/
 export BOOKMARKS=$HOME/.bookmarks
 export EDITOR=/usr/bin/vim
+
+export XDG_CONFIG_HOME="$HOME/.config"
+
 export HISTSIZE=1000000
 export HISTFILESIZE=4096000
 

@@ -8,8 +8,22 @@ cmd delete ${{
 	printf "%s\n\t" "$fx"
 	printf "delete?[y/N]"
 	read ans
-	[ $ans = "y" ] && rm -rf -- $fx
+	[ $ans = "y" ] && rm -rf -- "$fx"
 }}
+
+cmd copy-img ${{
+    type=`file -Lb --mime-type -- "$fx"`
+    if [[ "$type" == @("image/png"|"image/jpeg"|"image/gif"|"image/bmp") ]]; 
+    then
+        clear; tput cup $(($(tput lines)/3)); tput bold
+        set -f
+        printf "%s\n\t" "$fx"
+        printf "copy this image to clipboard?[y/N]"
+        read ans
+        [ $ans = "y" ] && xclip -selection clipboard -t $type -i "$fx"
+    fi
+}}
+    
 
 # Bindings
 map gh
@@ -19,10 +33,6 @@ map <c-n> push :mkdir<space>
 map <c-r> reload
 map <c-s> set hidden!
 map <enter> shell
-map x $$f
-map X !$f
-map o &mimeopen "$f"
-map O $mimeopen --ask "$f"
 
 map A :rename; cmd-end # at the very end
 map c push A<c-u> # new rename
@@ -34,3 +44,4 @@ map <c-e> down
 map <c-y> up
 
 map Y $printf "%s" "$fx" | xclip -selection clipboard
+map C copy-img

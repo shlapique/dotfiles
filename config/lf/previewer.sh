@@ -40,7 +40,7 @@ if [ -n "$FIFO_UEBERZUG" ]; then
     video/*)
       cache="$(hash "$file").jpg"
       cache "$cache" "$@"
-      ffmpegthumbnailer -i "$file" -o "$cache" -s 0
+      ffmpeg -i "$file" -ss 00:00:01.000 -vframes 1 "$cache"
       draw "$cache" "$@"
       ;;
     application/pdf)

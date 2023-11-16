@@ -1,0 +1,10 @@
+#!/bin/sh
+s=" | " # field separator
+exec 2>/dev/null
+
+filename=$(basename -- "$1")
+filesize=$(du -Hh -- "$1" | cut -f 1)
+geometry="${2}x${3}"
+extention=$(identify -format "%m" "$1")
+
+echo "${filesize}${s}${extention}${s}${geometry}${s}${filename}"
