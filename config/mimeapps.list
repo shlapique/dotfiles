@@ -19,8 +19,10 @@ message/rfc822=userapp-Thunderbird-IABEV1.desktop
 x-scheme-handler/mid=userapp-Thunderbird-IABEV1.desktop
 x-scheme-handler/discord-529050037532098580=discord-529050037532098580.desktop
 
+
 application/pdf=org.pwmt.zathura.desktop
 image/vnd.djvu=org.pwmt.zathura.desktop
+
 
 text/english=text.desktop
 text/plain=text.desktop
@@ -39,6 +41,8 @@ text/x-c=text.desktop
 text/x-c++=text.desktop
 text/x-log=text.desktop
 text/x-python3=text.desktop
+text/x-python=text.desktop
+
 
 image/png=image.desktop
 image/jpeg=image.desktop
@@ -48,6 +52,18 @@ image/svg+xml=image.desktop
 image/plain=image.desktop
 image/webp=image.desktop
 image/rtf=image.desktop
+
+
+audio/flac=mpv.desktop
+audio/mpeg=mpv.desktop
+audio/ogg=mpv.desktop
+audio/x-aiff=mpv.desktop
+audio/x-wav=mpv.desktop
+
+video/mp4=mpv.desktop
+video/H264=mpv.desktop
+video/x-matroska=mpv.desktop
+video/vnd.avi=mpv.desktop
 
 
 
