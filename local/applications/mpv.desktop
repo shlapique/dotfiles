@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=MPV
+Exec=mpv %F
+Terminal=false
+Type=Application
+Keywords=Video,Audio
+Icon=mpv
+Categories=Utility;
+StartupNotify=false
+MimeType=audio/flac;audio/mpeg;audio/ogg;audio/x-aiff;audio/x-wav;video/mp4;video/x-matroska;video/H264;video/vnd.avi
