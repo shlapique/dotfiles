@@ -9,6 +9,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'junegunn/goyo.vim'
 Plugin 'tpope/vim-commentary'
+Plugin 'JuliaEditorSupport/julia-vim'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -42,4 +43,3 @@ map <leader>f :Goyo \| set linebreak<CR>
 " remap ctrl + c and ctrl + v
 vnoremap <C-c> "*y :let @+=@*<CR>
 map <C-p> "*p
-
