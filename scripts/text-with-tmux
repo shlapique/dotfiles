@@ -1,0 +1,5 @@
+#!/bin/bash
+# for convenient vim edit in lf
+path="$1"
+echo $path
+tmux new-window -t && tmux send-keys "vim '$path'" C-m

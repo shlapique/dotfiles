@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+#  A simple tool for drawing plots of 1d functions.
+#  (throw them as args: ./plotter "sin(x)" "cos(x)" "...") 
+#  
+#  generates 'data.dat' in directory where you run it
+
+size_x=100
+size_y=100
+
+wx=10
+wy=10
+
+prec=100
+
+line_width=2
+
+data_file="data.dat"
+out_file="plot.png"
+# out_format="set xzeroaxis linetype 3 linewidth 2.5; set xrange [-$wx:$wx]; set yrange [-$wy:$wy]; set grid xtics ytics; set terminal png; set output '$out_file';"
+# out_format="set xrange [-$wx:$wx]; set yrange [-$wy:$wy]; set grid xtics ytics; set terminal png; set output '$out_file';"
+out_format="set xrange [-$wx:$wx]; set yrange [-$wy:$wy]; set grid xtics ytics;"
+
+if [ $# -gt 0 ]; then
+    r=""
+    for ((i=1; i<=$#; i++)); 
+    do
+        f="function f$i(x) {
+            return (${!i})
+        };";
+        r+=$f;
+    done
+else
+    echo "No arguments provided!"
+fi
+pts="print i"
+for ((i=1; i<=$#; i++)); 
+do 
+    pts+=", f$i(i)"; 
+done
+pts=${pts}'; printf ""'
+echo $pts
+cmd=${r}'BEGIN {for(i=-bound_x;i<=bound_x;i+=1/p){'${pts}'}}'
+echo $cmd
+awk -v bound_x=$size_x -v bound_y=$size_y -v p=$prec "$cmd" > $data_file
+
+out="$out_format p" 
+for ((i=1; i<=$#; i++)); 
+do 
+    out+=" '$data_file' u 1:$((i+1)) w l lw $line_width,"
+done
+out=${out::-1}"; pause -1"
+echo $out
+gnuplot -e "$out"

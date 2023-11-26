@@ -17,3 +17,5 @@ alias mrg='echo -n "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=resul
 alias splt='echo -n "gs -q -dNOPAUSE -dBATCH -sDEVICE=jpeg -r300 -sOutputFile=output_%03d.jpg kirill.pdf"'
 
 alias lf='lfub '
+
+alias vid='mpv av://v4l2:/dev/video0 --profile=low-latency --untimed'

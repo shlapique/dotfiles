@@ -18,7 +18,7 @@ export PROMPT_COMMAND="history -a; history -n"
 # append to history file
 shopt -s histappend
 
-export PATH=$PATH:~/.scripts/
+export PATH=$PATH:$HOME/.scripts/:$HOME/.local/bin
 export BOOKMARKS=$HOME/.bookmarks
 export EDITOR=/usr/bin/vim
 
