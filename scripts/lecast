@@ -12,7 +12,7 @@ ffmpeg \
 -f pulse -ac 2 -ar 96000 -i alsa_output.pci-0000_00_1b.0.iec958-stereo.monitor \
 -channel_layout stereo \
 -f x11grab \
--framerate 30 \
+-framerate 60 \
 -draw_mouse 0 \
 -s $(xrandr --current | grep -i '*' | awk '{print $1;}') \
 -i :0.0+0,0 \
