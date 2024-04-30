@@ -1,0 +1,23 @@
+#!/bin/bash
+urlencode() {
+      python3 -c "import sys, urllib.parse as ul; print(ul.quote(sys.argv[1]))" "$1"
+}
+
+url="https://latex.codecogs.com/png.image?\dpi{200}"
+fname="tex.png"
+tex="$(cat -)"
+# tex="$1"
+
+if [[ -z $tex ]];
+then
+    echo "no input"
+    exit 1
+fi
+
+e_tex=$(urlencode "$tex")
+c_url="$url$e_tex"
+echo $tex
+echo $c_url
+
+wget -q $c_url -O $fname
+chafa $fname

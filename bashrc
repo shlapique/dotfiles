@@ -24,11 +24,13 @@ export EDITOR=/usr/bin/vim
 
 export XDG_CONFIG_HOME="$HOME/.config"
 
-export HISTSIZE=1000000
-export HISTFILESIZE=4096000
+export QT_QPA_PLATFORMTHEME=qt5ct
+
+export HISTSIZE=-1
+export HISTFILESIZE=-1
 
 # ignore common commands
-export HISTIGNORE=":pwd:id:uptime:resize:ls:clear:history:htop:top:glances:"
+export HISTIGNORE=":pwd:id:uptime:resize:ls:l:clear:history:htop:top:glances:"
 
 # ignore spaces before commands an duplicate entries
 export HISTCONTROL=ignoredups
