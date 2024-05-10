@@ -6,7 +6,6 @@ urlencode() {
 url="https://latex.codecogs.com/png.image?\dpi{200}"
 fname="tex.png"
 tex="$(cat -)"
-# tex="$1"
 
 if [[ -z $tex ]];
 then
@@ -21,3 +20,4 @@ echo $c_url
 
 wget -q $c_url -O $fname
 chafa $fname
+

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# if wired power disappears -> sends alert in Telegram 
+
+battery=/sys/class/power_supply/BAT1
+header="[🚂sent from BACH server]"
+bat_status="F"
+timer=0
+
+while true; do
+        [ -e stopme ] && break
+        capacity="$(cat "$battery/capacity" 2>&1)"
+        case "$(cat "$battery/status" 2>&1)" in
+                "Charging")
+                        if [ $timer -eq 1200 ] || [ "$bat_status" != "C" ];
+                        then
+                                printf "${header}\n\n🔌charging... \[$capacity%%]\n\n`date -u +%Y-%m-%dT%H:%M:%S%Z`" | tg-send
+                                bat_status="C"
+                                timer=0
+                        fi
+                        ;;
+                "Discharging")
+                        if [ $timer -eq 300 ] || [ "$bat_status" != "D" ];
+                        then
+                                printf "${header}\n\n🛑Discharging! \[$capacity%%]\nServer lost wired power!\n\n`date -u +%Y-%m-%dT%H:%M:%S%`" | tg-send
+                                bat_status="D"
+                                timer=0
+                        fi
+                        ;;
+                "Full")
+                        if [ "$bat_status" != "F" ];
+                        then
+                                printf "${header}\n\n✅Battery is fully charged now! \[$capacity%%]\n\n`date -u +%Y-%m-%dT%H:%M:%S%Z`" | tg-send
+                                bat_status="F"
+                        fi
+                        ;;
+                *) exit 1 ;;
+        esac
+        if [ "$bat_status" == "F" ];
+        then
+                if [ $timer -ne 0 ];
+                then
+                        timer=0
+                fi
+        else
+                timer=$((timer+5))
+        fi
+        sleep 5
+done
