@@ -13,6 +13,9 @@
 test -s ~/.alias && . ~/.alias || true
 test -s ~/.keys && . ~/.keys || true
 
+# set bg
+. ~/.fehbg
+
 export PROMPT_COMMAND="history -a; history -n"
 
 # append to history file
