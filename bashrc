@@ -14,7 +14,7 @@ test -s ~/.alias && . ~/.alias || true
 test -s ~/.keys && . ~/.keys || true
 
 # set bg
-. ~/.fehbg
+# . ~/.fehbg
 
 export PROMPT_COMMAND="history -a; history -n"
 
@@ -40,4 +40,4 @@ export HISTCONTROL=ignoredups
 
 #####
 face="$(shuf -e -n 1 🐸 🐈 🌞 🧐 🛀 🐷 🐰 👞 👑 🌈 👷 🐠 🍥 🫠 🌜 🐭 🥸 🥰 🌴 🫴 🎈)"
-PS1="${face}:\W> "
+PS1="${face}(\t):\W> "

@@ -27,8 +27,9 @@ set hlsearch
 set mouse=a
 syntax enable
 
-autocmd FileType make setlocal noexpandtab
-autocmd FileType make setlocal shiftwidth=8
+autocmd FileType make setlocal shiftwidth=8 noexpandtab
+autocmd FileType r setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 " for autoclose braces
 "inoremap { {}<Esc>ha

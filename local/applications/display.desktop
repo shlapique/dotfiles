@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Display
+Exec=display %F
+Terminal=false
+Type=Application
+Keywords=Display
+Icon=display
+Categories=Utility;
+StartupNotify=false
+MimeType=image/svg+xml

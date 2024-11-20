@@ -4,7 +4,6 @@ x-scheme-handler/http=firefox.desktop
 x-scheme-handler/https=firefox.desktop
 x-scheme-handler/about=brave-browser.desktop
 x-scheme-handler/unknown=brave-browser.desktop
-video/mp4=org.gnome.Totem.desktop
 application/epub+zip=com.github.johnfactotum.Foliate.desktop
 application/x-wine-extension-osr=sh.ppy.osu.desktop
 x-scheme-handler/chrome=firefox.desktop
@@ -48,11 +47,11 @@ image/png=image.desktop
 image/jpeg=image.desktop
 image/bmp=image.desktop
 image/gif=image.desktop
-image/svg+xml=image.desktop
 image/plain=image.desktop
 image/webp=image.desktop
 image/rtf=image.desktop
 
+image/svg+xml=display.desktop
 
 audio/flac=mpv.desktop
 audio/mpeg=mpv.desktop
@@ -64,8 +63,8 @@ video/mp4=mpv.desktop
 video/H264=mpv.desktop
 video/x-matroska=mpv.desktop
 video/vnd.avi=mpv.desktop
-x-scheme-handler/discord-1216669957799018608=discord-1216669957799018608.desktop
 
+x-scheme-handler/discord-1216669957799018608=discord-1216669957799018608.desktop
 
 
 [Added Associations]
