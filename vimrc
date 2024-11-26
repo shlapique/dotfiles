@@ -44,3 +44,20 @@ map <leader>f :Goyo \| set linebreak<CR>
 " remap ctrl + c and ctrl + v
 vnoremap <C-c> "*y :let @+=@*<CR>
 map <C-p> "*p
+
+" Function to toggle TODO-DONE in .todo files
+function! ToggleTodo()
+    let l:line = getline('.')
+
+    if l:line =~ '^TODO '
+        let l:new_line = substitute(l:line, '^TODO ', 'DONE ', '')
+    elseif l:line =~ '^DONE '
+        let l:new_line = substitute(l:line, '^DONE ', '', '')
+    else
+        let l:new_line = 'TODO ' . l:line
+    endif
+
+    call setline('.', l:new_line)
+endfunction
+nnoremap gt :call ToggleTodo()<CR>
+autocmd BufNewFile,BufRead *.todo set filetype=todo
