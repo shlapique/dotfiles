@@ -21,3 +21,5 @@ alias bw='echo -n "gs -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sColorConversionStrat
 alias lf='lfub '
 
 alias vid='mpv av://v4l2:/dev/video0 --profile=low-latency --untimed'
+
+alias hey='hey "$(cat | iconv -f UTF-8 -t UTF-8//IGNORE)"'

@@ -50,9 +50,9 @@ function! ToggleTodo()
     let l:line = getline('.')
 
     if l:line =~ '^TODO '
-        let l:new_line = substitute(l:line, '^TODO ', 'DONE ', '')
-    elseif l:line =~ '^DONE '
-        let l:new_line = substitute(l:line, '^DONE ', '', '')
+        let l:new_line = substitute(l:line, '^TODO ', '✅ ', '')
+    elseif l:line =~ '^✅ '
+        let l:new_line = substitute(l:line, '^✅ ', '', '')
     else
         let l:new_line = 'TODO ' . l:line
     endif

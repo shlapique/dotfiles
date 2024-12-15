@@ -33,7 +33,7 @@ export HISTSIZE=-1
 export HISTFILESIZE=-1
 
 # ignore common commands
-export HISTIGNORE=":pwd:id:uptime:resize:ls:l:clear:history:htop:top:glances:"
+export HISTIGNORE=":pwd:id:uptime:resize:ls:l:clear:history:htop:top:glances:hey"
 
 # ignore spaces before commands an duplicate entries
 export HISTCONTROL=ignoredups
