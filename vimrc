@@ -10,6 +10,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'junegunn/goyo.vim'
 Plugin 'tpope/vim-commentary'
 Plugin 'JuliaEditorSupport/julia-vim'
+Plugin 'tomlion/vim-solidity'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
