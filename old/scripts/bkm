@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Makes a snapshot of Firefox bookmarks for further convenient use from a file
+#
+# UPD: now this tool in archive (i use ungoogled-chromium)
+
+base=${HOME}'/.mozilla/firefox/*/bookmarks.html'
+main="$BOOKMARKS"
+old="${HOME}/.old-bookmarks"
+new="${HOME}/.new-bookmarks"
+
+begin=$(date +%s.%N)
+echo "Updating bookmarks..."
+if [ ! -f "$main" ]; then touch "$main"; fi
+sed -ne 's/.*<A HREF="\([^"]*\).*>\([^<].*\)<\/A>/\1 "\2"/p' $base > $old
+awk '!seen[$0]++' "$old" > "$new"
+DIFF=$(diff "$main" "$new")
+
+duration=$(echo "$(date +%s.%N) - $begin" | bc)
+t=`printf "%.2f s" $duration`
+
+diff --color "$main" "$new"
+echo "Update time: $t"
+
+if [ "$DIFF" != "" ]
+then
+    while true; do
+    read -p "Patch this bookmarks? (y/n) " yn
+    case $yn in 
+        [yY]) 
+            mv "$new" "$main"
+            echo Patched👍!;
+            break;;
+        [nN]) echo exiting...;
+            exit;;
+        *) echo invalid response;;
+    esac
+    done
+else
+    echo "no updates😿"
+fi

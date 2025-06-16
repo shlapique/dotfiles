@@ -1,39 +1,29 @@
 #!/bin/bash
+
 #
-# Makes a snapshot of firefox bookmarks for further convenient use from a file
+# Convinient way of searching in Chromes' bookmarks
 #
-base=${HOME}'/.mozilla/firefox/*/bookmarks.html'
-main="$BOOKMARKS"
-old="${HOME}/.old-bookmarks"
-new="${HOME}/.new-bookmarks"
 
-begin=$(date +%s.%N)
-echo "Updating bookmarks..."
-if [ ! -f "$main" ]; then touch "$main"; fi
-sed -ne 's/.*<A HREF="\([^"]*\).*>\([^<].*\)<\/A>/\1 "\2"/p' $base > $old
-awk '!seen[$0]++' "$old" > "$new"
-DIFF=$(diff "$main" "$new")
+BOOKMARKS_PATH="$HOME/.config/chromium/Default/Bookmarks"
 
-duration=$(echo "$(date +%s.%N) - $begin" | bc)
-t=`printf "%.2f s" $duration`
+BKM=$(jq -r "
+  .roots.bookmark_bar.children[]
+  | select(.name? == \"kroll's\")
+  | .children[]
+  | select(.name? == \"Speed Dials\")
+  | .children[]
+  | \"\(.url) -- \u001b[35m\(.name)\u001b[0m\"" "$BOOKMARKS_PATH" | fzf --ansi)
 
-diff --color "$main" "$new"
-echo "Update time: $t"
+[ -z "$BKM" ] && echo "No selection made." && exit 1
 
-if [ "$DIFF" != "" ]
-then
-    while true; do
-    read -p "Patch this bookmarks? (y/n) " yn
-    case $yn in 
-        [yY]) 
-            mv "$new" "$main"
-            echo Patched👍!;
-            break;;
-        [nN]) echo exiting...;
-            exit;;
-        *) echo invalid response;;
-    esac
-    done
+URL=$(echo "$BKM" | awk -F' -- ' '{print $1}')
+NAME=$(echo "$BKM" | awk -F' -- ' '{print $2}')
+
+if command -v xclip &>/dev/null; then
+    echo -n "$URL" | xclip -selection clipboard
 else
-    echo "no updates😿"
+    echo "xclip not found"
+    exit 1
 fi
+
+echo "Copied🐧"

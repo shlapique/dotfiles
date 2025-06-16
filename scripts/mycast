@@ -1,8 +1,27 @@
 #!/bin/bash
 # screen + micro capturing
 
+if ! command -v wmctrl &> /dev/null; then
+    echo "wmctrl not found!"
+    exit 1
+fi
+
 pavucontrol & \
 killall -9 pavucontrol
+
+WINDOW=$(wmctrl -l | dmenu -l 10 -p "Select a window to record:")
+if [ -z "$WINDOW" ]; then
+    echo "None of the windows were selected. Exiting..."
+    exit 1
+fi
+
+WINDOW_ID=$(echo "$WINDOW" | awk '{print $1}')
+
+GEOMETRY=$(wmctrl -lG | grep "$WINDOW_ID" | awk '{print $3,$4,$5,$6}')
+WIDTH=$(echo "$GEOMETRY" | awk '{print $3}')
+HEIGHT=$(echo "$GEOMETRY" | awk '{print $4}')
+X=$(echo "$GEOMETRY" | awk '{print $1}')
+Y=$(echo "$GEOMETRY" | awk '{print $2}')
 
 dir=$HOME/Videos
 name=$(date | awk '{print $2 "-" $3 "-" $7}')
@@ -11,8 +30,8 @@ ffmpeg -f alsa -ac 2 -i default \
 -channel_layout stereo \
 -f x11grab \
 -framerate 30 \
--s $(xrandr --current | grep -i '*' | awk '{print $1;}') \
--i :0.0+0,0 \
+-s "${WIDTH}x${HEIGHT}" \
+-i :0.0+$X,$Y \
 -c:v libx264 \
 -preset ultrafast -crf 25 \
 -c:a aac \
