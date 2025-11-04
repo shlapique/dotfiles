@@ -57,14 +57,3 @@ map <leader>f :Goyo \| set linebreak<CR>
 " remap ctrl + c and ctrl + v
 vnoremap <C-c> "*y :let @+=@*<CR>
 map <C-p> "*p
-
-" Define keymaps for vim-fireplace only in Clojure files
-augroup FireplaceClojureMappings
-  autocmd!
-  autocmd FileType clojure,lisp,cljc,cljs nnoremap <buffer> cpp <Plug>FireplaceEval
-  autocmd FileType clojure,lisp,cljc,cljs vnoremap <buffer> cp <Plug>FireplaceEvalMotion
-  autocmd FileType clojure,lisp,cljc,cljs nnoremap <buffer> cqc :FireplaceReplToggle<CR>
-  autocmd FileType clojure,lisp,cljc,cljs nnoremap <buffer> K :FireplaceDoc<CR>
-  autocmd FileType clojure,lisp,cljc,cljs nnoremap <buffer> [d :FireplaceSource<CR>
-augroup END
-" END
