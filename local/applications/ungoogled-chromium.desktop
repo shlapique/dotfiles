@@ -2,7 +2,7 @@
 Version=1.0
 Type=Application
 Name=Ungoogled Chromium (AppImage)
-Exec=chromium-ungoogled -- %u
+Exec=ungoogled-chromium -- %u
 Icon=chromium
 StartupWMClass=chromium-browser
 StartupNotify=true

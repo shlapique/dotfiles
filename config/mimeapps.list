@@ -68,8 +68,6 @@ x-scheme-handler/discord-1216669957799018608=discord-1216669957799018608.desktop
 
 
 [Added Associations]
-application/vnd.rar=org.gnome.FileRoller.desktop;
-video/mp4=vlc.desktop;org.gnome.Totem.desktop;
 application/x-wine-extension-osz=wine-extension-osr.desktop;
 application/x-wine-extension-osr=wine-extension-osk.desktop;net.lutris.Lutris.desktop;wine-extension-osz2.desktop;wine-extension-osz.desktop;sh.ppy.osu.desktop;
 image/jpeg=gimp.desktop;

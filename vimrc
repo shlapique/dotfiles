@@ -1,8 +1,8 @@
 let mapleader =" "
 
-" pluginz
-set nocompatible              " be iMproved, required
-filetype off                  " required
+" pluginz BEGIN
+set nocompatible                      " be iMproved, required
+filetype off                          " required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
@@ -12,25 +12,36 @@ Plugin 'tpope/vim-commentary'
 Plugin 'JuliaEditorSupport/julia-vim'
 Plugin 'tomlion/vim-solidity'
 
-call vundle#end()            " required
-filetype plugin indent on    " required
+call vundle#end()                      " required
+filetype plugin indent on              " required
 " pluginz END
 
-" BASE
+" BASE BEGIN
+syntax on
+set expandtab
 set tabstop=4
 set shiftwidth=4
 set smarttab
-set expandtab
+set autoindent
 set smartindent
 set number relativenumber
 set incsearch
 set hlsearch
 set mouse=a
-syntax enable
 
-autocmd FileType make setlocal shiftwidth=8 noexpandtab
+" generate tags with: ctags -R .
+" check for tags in the directory of the current file
+" and also check upward through parent directories until it finds a tags file
+" or hits the root of the filesystem
+set tags=./tags,tags;
+" BASE END
+
+" filetypez BEGIN
+autocmd FileType make setlocal noexpandtab shiftwidth=8 softtabstop=0 tabstop=8
 autocmd FileType r setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType typescript setlocal ts=2 sts=2 sw=2 expandtab
+" filetypez END
 
 " for autoclose braces
 "inoremap { {}<Esc>ha
@@ -45,20 +56,3 @@ map <leader>f :Goyo \| set linebreak<CR>
 " remap ctrl + c and ctrl + v
 vnoremap <C-c> "*y :let @+=@*<CR>
 map <C-p> "*p
-
-" Function to toggle TODO-DONE in .todo files
-function! ToggleTodo()
-    let l:line = getline('.')
-
-    if l:line =~ '^TODO '
-        let l:new_line = substitute(l:line, '^TODO ', '✅ ', '')
-    elseif l:line =~ '^✅ '
-        let l:new_line = substitute(l:line, '^✅ ', '', '')
-    else
-        let l:new_line = 'TODO ' . l:line
-    endif
-
-    call setline('.', l:new_line)
-endfunction
-nnoremap gt :call ToggleTodo()<CR>
-autocmd BufNewFile,BufRead *.todo set filetype=todo

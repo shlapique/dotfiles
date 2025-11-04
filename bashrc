@@ -21,7 +21,8 @@ export PROMPT_COMMAND="history -a; history -n"
 # append to history file
 shopt -s histappend
 
-export PATH=$PATH:$HOME/.scripts/:$HOME/.local/bin
+export PATH=$PATH:$HOME/.scripts/:$HOME/.local/bin/:/var/lib/flatpak/exports/bin/
+
 export BOOKMARKS=$HOME/.bookmarks
 export EDITOR=/usr/bin/vim
 
@@ -41,3 +42,10 @@ export HISTCONTROL=ignoredups
 #####
 face="$(shuf -e -n 1 🐸 🐈 🌞 🧐 🛀 🐷 🐰 👞 👑 🌈 👷 🐠 🍥 🫠 🌜 🐭 🥸 🥰 🌴 🫴 🎈)"
 PS1="${face}(\t):\W> "
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# spoofdpi
+export PATH=$PATH:~/.spoofdpi/bin
