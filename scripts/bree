@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#
+# an easy way to control screen brightness on my laptop
+#
+
+device_path="/sys/class/backlight/amdgpu_bl1/"
+max_brightness=$(<"${device_path}max_brightness")
+
+brightness="$1"
+
+if [[ "$brightness" -lt "5" ]]; then
+    echo "Brightness is too low"
+    exit 1
+else
+    if [[ "$brightness" -gt "100" ]]; then
+        brightness="100"
+        echo "brightness=100"
+    fi
+fi
+
+val=$(perl -MPOSIX -e 'print floor($ARGV[0]*0.01*$ARGV[1])' "$brightness" "$max_brightness")
+
+if [ $? -eq 0 ]; then
+    sudo echo "$val" > "${device_path}brightness"
+else
+    echo "Smth went wrong"
+    exit 1
+fi
