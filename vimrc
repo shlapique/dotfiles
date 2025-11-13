@@ -12,6 +12,7 @@ Plugin 'tpope/vim-commentary'
 Plugin 'JuliaEditorSupport/julia-vim'
 Plugin 'tomlion/vim-solidity'
 Plugin 'tpope/vim-fireplace'
+Plugin 'guns/vim-clojure-static' " syntax & indent
 
 call vundle#end()                      " required
 filetype plugin indent on              " required
@@ -44,16 +45,12 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType typescript setlocal ts=2 sts=2 sw=2 expandtab
 " filetypez END
 
-" for autoclose braces
-"inoremap { {}<Esc>ha
-"inoremap ( ()<Esc>ha
-"inoremap [ []<Esc>ha
-"inoremap ' ''<Esc>ha
-"inoremap ` ``<Esc>ha
-
 " goyo 
 map <leader>f :Goyo \| set linebreak<CR>
 
 " remap ctrl + c and ctrl + v
 vnoremap <C-c> "*y :let @+=@*<CR>
 map <C-p> "*p
+
+" fireplace keymaps
+nmap <leader>ee cpp
