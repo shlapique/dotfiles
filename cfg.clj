@@ -11,9 +11,8 @@
     (when-let [line (first (str/split-lines (:out cpuinfo)))]
       (second (str/split line #"\s+: ")))))
 
-(defn get-basename [path]
-  (last (str/split path #"/")))
-
+; FIXME
+; too many str calls
 (defn stir-up-dir
   "a map { key 'path', value 'HOME + '.' + path' } for every file in [dir]"
   [dir] 
@@ -25,48 +24,80 @@
 (defn link-dotfiles 
   "Idempotently links dotfiles"
   [links]
-  (map (fn [[k v]]
-         (fs/create-dirs (fs/parent v)) 
-         (if (or (fs/exists? v) (fs/sym-link? v))
-           (println "Already exists:" v)
-           (do 
-             (fs/create-sym-link v k)
-             (println "Linked: ", k, " to ", v)))) links))
+  (doseq [[src dest] links
+          :let [parent (fs/parent dest)]]
+    (fs/create-dirs parent)
+
+    (cond
+      (and (fs/sym-link? dest)
+           (= (fs/read-link dest) src))
+      (println "Already linked:" dest)
+
+      (fs/exists? dest)
+      (println "Conflict:" dest "-> remove")
+
+      :else
+      (do (fs/create-sym-link dest src)
+          (println "Linked:" src "->" dest)))))
 
 (defn same-file? [file1 file2]
-  (let [{:keys [exit out err]}
-        (sh {:throw false} "cmp" "-s" file1 file2)]
-    (zero? exit)))
+  (zero? (:exit (sh {:throw false} "cmp" "-s" file1 file2))))
 
 ; FIXME
 (defn push-system-config
   "Idempotently writes system config files.
    [cfg] is {'system/file' '/some/system/path/'}"
   ([cfg] (push-system-config cfg {}))
-  ([cfg {:keys [frce] :or {frce false}}]
-  (map (fn [[k v]]
-         (if (not (or 
-                    (fs/exists? (fs/path v (get-basename k))) 
-                    frce))
-           (fs/copy k v {:replace-existing true})
-           (do 
-             (println "File " (get-basename k) " already exists at dir " v)
-             (if (same-file? 
-                   (str (fs/path v (get-basename k)))
-                   k)
-               (println "Nothing to do...")
-               (println "Unable to push file " k " to dir " v ". Use {:force true} option.")))))
-         cfg)))
+  ([cfg {:keys [force?] :or {force? false}}]
+   (doseq [[src dest-dir] cfg
+           :let [filename  (fs/file-name src)
+                 dest-path (fs/path dest-dir filename)]]
+     (cond 
+       force? 
+       (do (fs/copy src dest-path {:replace-existing true})
+           (println "Forced overwrite:" dest-path))
+
+       (not (fs/exists? dest-path))
+       (do (fs/copy src dest-path)
+           (println "Installed:" dest-path))
+       
+       (same-file? (str dest-path) src)
+       (println "Already up to date:" dest-path)
+
+       :else
+       (println "Conflict:" dest-path
+                "-> use {:force true} to overwrite")))))
+
+(defn purge-system-config 
+  "Purges system config files."
+  [cfg]
+  (doseq [[src dest-dir] cfg
+          :let [filename  (fs/file-name src)
+                dest-path (fs/path dest-dir filename)]]
+    (if (fs/exists? dest-path)
+      (fs/delete dest-path)
+      (println "Unable to delete file:" dest-path
+               "file doesnt exist"))))
+
+(defn enable-service
+  ([service] (enable-service service {}))
+  ([service {:keys [now?] :or {now? false}}]
+  (sh "sudo" "systemctl" "enable" service)
+  (when now? 
+    (if (zero? (:exit (sh "sudo" "systemctl" "start" service)))
+      (println "Service " service " started")
+      (println "Unable to start" service)))
+  (println "Enabled:" service)))
 
 (defn disable-service 
   ([service] (disable-service service {}))
-  ([service {:keys [stop] :or {stop false}}]
+  ([service {:keys [stop?] :or {stop? false}}]
   (sh "sudo" "systemctl" "disable" service)
-  (when stop 
+  (when stop?
     (if (zero? (:exit (sh "sudo" "systemctl" "stop" service)))
-      (println "Service " service " stopped successfully")
+      (println "Service " service " stopped")
       (println "Unable to stop " service)))
-  (println "Masked and disabled:" service)))
+  (println "Disabled:" service)))
 
 (defn user-in-group? [user group]
   (let [{:keys [out]} 
@@ -144,9 +175,9 @@
                                                "system/20-intel.conf"
                                                "system/20-amd.conf") "/etc/X11/xorg.conf.d"}})
 
-; (def steps
-;   [{:name "Push system X11 config"
-;     :do   #(map (fn [[k v]] (fs/copy k v)) (:system-config-map config))
-;     :undo #()}])
+(def steps
+  [{:name "Push system X11 config"
+    :do   #(push-system-config (:system-config-map config))
+    :undo #()}])
 
 ; (push-system-config (:system-config-map config))
