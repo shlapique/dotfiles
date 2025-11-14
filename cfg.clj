@@ -1,4 +1,4 @@
-(require '[babashka.process :refer [shell]]
+(require '[babashka.process :refer [sh]]
          '[babashka.fs :as fs]
          '[babashka.process :refer [process]]
          '[clojure.java.io :as io]
@@ -7,9 +7,12 @@
 (def home (System/getenv "HOME"))
 
 (defn get-cpu-vendor []
-  (let [cpuinfo (shell {:out :string} "grep" "vendor_id" "/proc/cpuinfo")]
+  (let [cpuinfo (sh {:out :string} "grep" "vendor_id" "/proc/cpuinfo")]
     (when-let [line (first (str/split-lines (:out cpuinfo)))]
       (second (str/split line #"\s+: ")))))
+
+(defn get-basename [path]
+  (last (str/split path #"/")))
 
 (defn stir-up-dir
   "a map { key 'path', value 'HOME + '.' + path' } for every file in [dir]"
@@ -28,27 +31,51 @@
            (println "Already exists:" v)
            (do 
              (fs/create-sym-link v k)
-             (println "Linked ", k, " ", v)))) links))
+             (println "Linked: ", k, " to ", v)))) links))
+
+(defn same-file? [file1 file2]
+  (let [{:keys [exit out err]}
+        (sh {:throw false} "cmp" "-s" file1 file2)]
+    (zero? exit)))
+
+; FIXME
+(defn push-system-config
+  "Idempotently writes system config files.
+   [cfg] is {'system/file' '/some/system/path/'}"
+  ([cfg] (push-system-config cfg {}))
+  ([cfg {:keys [frce] :or {frce false}}]
+  (map (fn [[k v]]
+         (if (not (or 
+                    (fs/exists? (fs/path v (get-basename k))) 
+                    frce))
+           (fs/copy k v {:replace-existing true})
+           (do 
+             (println "File " (get-basename k) " already exists at dir " v)
+             (if (same-file? 
+                   (str (fs/path v (get-basename k)))
+                   k)
+               (println "Nothing to do...")
+               (println "Unable to push file " k " to dir " v ". Use {:force true} option.")))))
+         cfg)))
 
 (defn disable-service 
   ([service] (disable-service service {}))
   ([service {:keys [stop] :or {stop false}}]
-  ; (shell "sudo" "systemctl" "mask" service)
-  (shell "sudo" "systemctl" "disable" service)
+  (sh "sudo" "systemctl" "disable" service)
   (when stop 
-    (if (zero? (:exit (shell "sudo" "systemctl" "stop" service)))
+    (if (zero? (:exit (sh "sudo" "systemctl" "stop" service)))
       (println "Service " service " stopped successfully")
       (println "Unable to stop " service)))
   (println "Masked and disabled:" service)))
 
 (defn user-in-group? [user group]
   (let [{:keys [out]} 
-        (shell {:out :string} "groups" user)]
+        (sh {:out :string} "groups" user)]
     (some #(= % group) (str/split (str/trim out) #"\s+"))))
 
 (defn add-user-to-group [user group]
   (let [{:keys [exit out err]} 
-        (shell {:throw false} "sudo" "usermod" "-aG" group user)]
+        (sh {:throw false} "sudo" "usermod" "-aG" group user)]
     (if (zero? exit)
       (println "User added to" group " group successfully.")
       (println "Failed to add user to" group " group:" err))))
@@ -115,9 +142,11 @@
   :system-config-map {"system/00-keyboard.conf" "/etc/X11/xorg.conf.d"
                       (if (= (get-cpu-vendor) "GenuineIntel") 
                                                "system/20-intel.conf"
-                                               "system/20-amdconf") "/etc/X11/xorg.conf.d"}})
+                                               "system/20-amd.conf") "/etc/X11/xorg.conf.d"}})
 
-(def steps
-  [{:name "Push system config"
-    :do   #(map (fn [[k v]] (fs/copy k v)) (:system-config-map config))
-    :undo #()}])
+; (def steps
+;   [{:name "Push system X11 config"
+;     :do   #(map (fn [[k v]] (fs/copy k v)) (:system-config-map config))
+;     :undo #()}])
+
+; (push-system-config (:system-config-map config))
