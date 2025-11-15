@@ -165,6 +165,7 @@
       (println "Enabled repo:" title)
       (println "Failed to enable repo:" err))))
 
+
 (defn ensure-repo [title url]
   (cond
     (and (repo-exists? title) (repo-enabled? title))
@@ -176,13 +177,16 @@
       (enable-repo title))
 
     :else
-    (do 
+    (do
       (println "Adding repo:" title)
       (let [{:keys [exit err]}
             (sh {:throw false}
-                "sudo" "zypper" "--non-interactive" "ar" url title)]
+                "sudo" "zypper" "--non-interactive" "--gpg-auto-import-keys" "ar" url title)]
         (if (zero? exit)
-          (println "Added repo:" title)
+          (do
+            (println "Added repo:" title)
+            (println "Refreshing repo to import GPG keys...")
+            (sh {:throw false} "sudo" "zypper" "--non-interactive" "--gpg-auto-import-keys" "ref" title))
           (println "Failed to add repo:" title ":" err))))))
 
 (defn remove-repo [title]
