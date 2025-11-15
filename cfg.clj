@@ -304,10 +304,11 @@
                          "system/20-amd.conf") "/etc/X11/xorg.conf.d"}})
 
 ;; ===== STEPS =====
+
 (def step-ensure-x11-repo
   {:title "Ensure X11 utilities repo"
    :state-key :repo-x11
-   :dof #(do (ensure-repo "X11:Utilities" "https://download.opensuse.org/repositories/X11:Utilities/openSUSE_Tumbleweed/X11:Utilities.repo")
+   :dof #(do (ensure-repo "X11:Utilities" "https://download.opensuse.org/repositories/X11:Utilities/openSUSE_Tumbleweed/")
              true)
    :undof (fn [_]
             (println "Removing X11:Utilities repo...")
