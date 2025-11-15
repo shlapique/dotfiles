@@ -24,9 +24,10 @@
     (when-let [line (first (str/split-lines (:out cpuinfo)))]
       (second (str/split line #"\s+: ")))))
 
+
 (defn stir-up-dir
   "Creates a map of {source-path -> dest-path} for all files in config-dir.
-   Source paths are absolute, dest paths are in HOME with a dot prefix."
+   Preserves directory structure: config/kitty/kitty.conf -> ~/.config/kitty/kitty.conf"
   [home config-dir-name]
   (let [config-dir (fs/path script-dir config-dir-name)]
     (when (fs/exists? config-dir)
@@ -34,7 +35,7 @@
             (for [file (filter fs/regular-file? (fs/glob config-dir "**"))
                   :let [rel-path (fs/relativize config-dir file)
                         abs-src (fs/absolutize file)
-                        dest (fs/path home (str "." rel-path))]]
+                        dest (fs/path home (str "." config-dir-name) rel-path)]]
               [(str abs-src) dest])))))
 
 (defn link-dotfiles 
@@ -363,7 +364,6 @@
    :dof #(do-add-user-to-group user "video")
    :undof #(undo-add-user-to-group % user "video")})
 
-;; Define step order
 (def step-order
   [:repo-x11
    :installed-packages
