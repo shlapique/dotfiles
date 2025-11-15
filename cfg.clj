@@ -4,8 +4,6 @@
          '[clojure.java.io :as io]
          '[clojure.string :as str])
 
-(def home (System/getenv "HOME"))
-
 (defn get-cpu-vendor []
   (let [cpuinfo (sh {:out :string} "grep" "vendor_id" "/proc/cpuinfo")]
     (when-let [line (first (str/split-lines (:out cpuinfo)))]
@@ -15,11 +13,11 @@
 ; too many str calls
 (defn stir-up-dir
   "a map { key 'path', value 'HOME + '.' + path' } for every file in [dir]"
-  [dir] 
+  [home config-dir] 
   (into {} 
         (map (fn [x] 
                [(str x) (fs/path home (str "." (str x)))])
-             (filter fs/regular-file? (fs/glob dir "**")))))
+             (filter fs/regular-file? (fs/glob config-dir "**")))))
 
 (defn link-dotfiles 
   "Idempotently links dotfiles"
@@ -105,15 +103,115 @@
     (some #(= % group) (str/split (str/trim out) #"\s+"))))
 
 (defn add-user-to-group [user group]
-  (let [{:keys [exit out err]} 
+  (cond
+    (user-in-group? user group)
+    (println "User" user "already in group" group "- nothing to do")
+
+    :else
+    (let [{:keys [exit err]}
         (sh {:throw false} "sudo" "usermod" "-aG" group user)]
     (if (zero? exit)
-      (println "User added to" group " group successfully.")
-      (println "Failed to add user to" group " group:" err))))
+      (println "User added to" group "group successfully.")
+      (println "Failed to add user" user "to group" group ":" err)))))
 
-; (defn install-packages [pkgs]
+(defn remove-user-from-group [user group]
+  (cond
+    (user-in-group? user group)
+    (let [{:keys [exit err]}
+          (sh {:throw false} "sudo" "gpasswd" "-d" user group)]
+    (if (zero? exit)
+      (println "User removed from" group "successfully.")
+      (println "Failed to remove user" user "from group" group ":" err)))
+
+    :else
+    (println "User" user "not in group" group "!")))
+
+(defn repo-exists? [title]
+  (let [{:keys [out]} (sh {:throw false :out :string} "zypper" "lr")]
+    (some (fn [line]
+            (let [[_ alias name & _] (map str/trim (str/split line #"\|"))]
+              (or (= alias title)
+                  (= name title))))
+          (str/split-lines out))))
+
+(defn repo-enabled? [title]
+  (let [{:keys [out]} (sh {:out :string :throw false} "zypper" "lr")]
+    (some (fn [line]
+            (let [[_ alias name enabled & _]
+                  (map str/trim (str/split line #"\|"))]
+              (when (or (= alias title) (= name title))
+                (= enabled "Yes"))))
+          (str/split-lines out))))
+
+(defn enable-repo [title]
+  (let [{:keys [exit err]}
+        (sh {:throw false}
+            "sudo" "zypper" "--non-interactive" "mr" "-e" title)]
+    (if (zero? exit)
+      (println "Enabled repo:" title)
+      (println "Failed to enable repo:" err))))
+
+(defn ensure-repo [title url]
+  (cond
+    (and (repo-exists? title) (repo-enabled? title))
+    (println "Repo" title "already exists and is enabled. Nothing to do.")
+
+    (repo-exists? title)
+    (do
+      (println "Repo" title "exists, but disabled. Enabling...")
+      (enable-repo title))
+
+    :else
+    (do 
+      (println "Adding repo:" title)
+      (let [{:keys [exit err]}
+            (sh {:throw false}
+                "sudo" "zypper" "--non-interactive" "ar" url title)]
+        (if (zero? exit)
+          (println "Added repo:" title)
+          (println "Failed to add repo:" title))))))
+
+(defn pkg-installed? [pkg]
+  (let [{:keys [exit]}
+        (sh {:throw false} "rpm" "-q" pkg)]
+    (zero? exit)))
+
+(defn install-packages [pkgs]
+  (let [missing (remove pkg-installed? pkgs)]
+    (cond
+      (empty? missing)
+      (println "All packages already installed. Nothing to do.")
+
+      :else
+      (do
+        (println "Installing missing packages:" missing)
+        (let [{:keys [exit err]}
+              (apply sh {:throw false} 
+                     "sudo" "zypper" "--non-interactive" "install" missing)]
+          (if (zero? exit)
+          (println "Successfully installed:" missing)
+          (println "Failed:" err)))
+        missing))))
+
+(defn revert-packages [pkgs]
+  (cond
+    (empty? pkgs)
+    (println "Nothing to revert.")
+
+    :else
+    (do
+      (println "Removing packages:" pkgs)
+      (let [{:keys [exit err]}
+            (apply sh {:throw false}
+                   "sudo" "zypper" "--non-interactive" "remove" "--clean-deps" pkgs)]
+        (if (zero? exit)
+          (println "Successfully removed:" pkgs)
+          (println "Error removing:" err))))))
 
 ;; ===== CONFIG =====
+(def home (System/getenv "HOME"))
+(def user (System/getenv "USER"))
+
 (def config
   {:pkgs ["tlp"
           "atop"
@@ -167,8 +265,8 @@
                          "vimrc" (fs/path home ".vimrc")
                          "alias" (fs/path home ".alias")
                          "scripts" (fs/path home ".scripts")}
-                        (stir-up-dir "local")
-                        (stir-up-dir "config"))
+                        (stir-up-dir home "local")
+                        (stir-up-dir home "config"))
 
   :system-config-map {"system/00-keyboard.conf" "/etc/X11/xorg.conf.d"
                       (if (= (get-cpu-vendor) "GenuineIntel") 
@@ -176,8 +274,14 @@
                                                "system/20-amd.conf") "/etc/X11/xorg.conf.d"}})
 
 (def steps
-  [{:name "Push system X11 config"
+  [
+   {:name "Push system X11 config"
     :do   #(push-system-config (:system-config-map config))
-    :undo #()}])
+    :undo #(purge-system-config (:system-config-map config))}
+   
+   {:name "Add user to 'video' group"
+    :do #(add-user-to-group user "video")
+    :undo #(remove-user-from-group user "video")}
 
-; (push-system-config (:system-config-map config))
+   ])
+
