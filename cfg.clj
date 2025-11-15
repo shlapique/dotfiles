@@ -12,12 +12,12 @@
 
 (defn read-state [file]
   (if (fs/exists? file)
-    (edn/read-string (slurp file))
+    (edn/read-string (slurp (str file)))
     {}))
 
 (defn write-state! [st file]
   (fs/create-dirs (fs/parent file))
-  (spit file (pr-str st)))
+  (spit (str file) (pr-str st)))
 
 (defn get-cpu-vendor []
   (let [cpuinfo (sh {:out :string} "grep" "vendor_id" "/proc/cpuinfo")]
@@ -414,4 +414,4 @@
           (println "Available commands: all, undo-all, undo <step-name>")
           (println "Available steps:" (keys step-name-to-key))))))
 
-(-main *command-line-args*)
+(apply -main *command-line-args*)
