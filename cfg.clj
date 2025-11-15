@@ -307,7 +307,7 @@
 (def step-ensure-x11-repo
   {:title "Ensure X11 utilities repo"
    :state-key :repo-x11
-   :dof #(do (ensure-repo "X11:Utilities" "https://download.opensuse.org/repositories/X11:/Utilities/openSUSE_Tumbleweed/")
+   :dof #(do (ensure-repo "X11:Utilities" "https://download.opensuse.org/repositories/X11:Utilities/openSUSE_Tumbleweed/X11:Utilities.repo")
              true)
    :undof (fn [_]
             (println "Removing X11:Utilities repo...")
