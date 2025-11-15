@@ -185,6 +185,14 @@
           (println "Added repo:" title)
           (println "Failed to add repo:" title ":" err))))))
 
+(defn remove-repo [title]
+  (let [{:keys [exit err]}
+        (sh {:throw false}
+            "sudo" "zypper" "--non-interactive" "rr" title)]
+    (if (zero? exit)
+      (println "Removed repo:" title)
+      (println "Failed to remove repo:" err))))
+
 (defn pkg-installed? [pkg]
   (let [{:keys [exit]}
         (sh {:throw false} "rpm" "-q" pkg)]
@@ -296,14 +304,14 @@
                          "system/20-amd.conf") "/etc/X11/xorg.conf.d"}})
 
 ;; ===== STEPS =====
-
 (def step-ensure-x11-repo
   {:title "Ensure X11 utilities repo"
    :state-key :repo-x11
    :dof #(do (ensure-repo "X11:Utilities" "https://download.opensuse.org/repositories/X11:/Utilities/openSUSE_Tumbleweed/")
              true)
    :undof (fn [_]
-            (println "Cannot automatically undo repo add. Skipping."))})
+            (println "Removing X11:Utilities repo...")
+            (remove-repo "X11:Utilities"))})
 
 (def step-install-packages
   {:title "Install packages"
@@ -388,7 +396,7 @@
 
 (defn -main [& args]
   (when (empty? args)
-    (println "Usage: bb cfg.clj [all|undo-all|<step-name>|undo <step-name>]")
+    (println "Usage: bb cfg.clj [all|undo-all|reset-all|<step-name>|undo <step-name>|reset <step-name>]")
     (println "Available steps:" (keys step-name-to-key))
     (System/exit 1))
   
@@ -399,6 +407,21 @@
 
       (= cmd "undo-all")
       (undo-all!)
+
+      (= cmd "reset-all")
+      (do
+        (println "Resetting all state...")
+        (write-state! {} state-file)
+        (println "State cleared."))
+
+      (= cmd "reset")
+      (if-let [step-key (get step-name-to-key (second args))]
+        (let [state (read-state state-file)]
+          (println "Resetting state for:" (second args))
+          (write-state! (dissoc state step-key) state-file)
+          (println "State cleared."))
+        (do (println "Unknown step:" (second args))
+            (println "Available steps:" (keys step-name-to-key))))
 
       (= cmd "undo")
       (if-let [step-key (get step-name-to-key (second args))]
@@ -411,7 +434,7 @@
 
       :else
       (do (println "Unknown command:" cmd)
-          (println "Available commands: all, undo-all, undo <step-name>")
+          (println "Available commands: all, undo-all, reset-all, undo <step-name>, reset <step-name>")
           (println "Available steps:" (keys step-name-to-key))))))
 
 (apply -main *command-line-args*)
