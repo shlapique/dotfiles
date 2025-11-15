@@ -209,12 +209,15 @@
       (do (println "  Nothing to install.") [])
 
       :else
-      (let [{:keys [exit err]}
-            (apply sh {:throw false}
+      (let [{:keys [exit out err]}
+            (apply sh {:throw false :out :string :err :string}
                    "sudo" "zypper" "--non-interactive" "install" missing)]
         (if (zero? exit)
           (do (println "  Installed:" missing) missing)
-          (throw (Exception. (str "Package install failed: " err))))))))
+          (do
+            (println "  STDOUT:" out)
+            (println "  STDERR:" err)
+            (throw (Exception. (str "Package install failed with exit code " exit)))))))))
 
 (defn undo-install-pkgs [pkgs]
   (when (seq pkgs)
