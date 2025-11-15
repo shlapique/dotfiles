@@ -271,7 +271,6 @@
           "opi"
           "chromium"
           "samba-client"
-          "neofetch"
           "xwallpaper"
           "pcmanfm"
           "dunst"
