@@ -41,7 +41,8 @@ export HISTCONTROL=ignoredups
 
 #####
 face="$(shuf -e -n 1 🐸 🐈 🌞 🧐 🛀 🐷 🐰 👞 👑 🌈 👷 🐠 🍥 🫠 🌜 🐭 🥸 🥰 🌴 🫴 🎈)"
-PS1="${face}(\t):\W> "
+# PS1="${face}(\t):\W> "
+PS1="[GOM](\t):\W> "
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
