@@ -1,0 +1,11 @@
+[font]
+size = 11.0
+
+[bell]
+duration = 0
+
+[scrolling]
+history = 100000
+
+[general]
+import = ["./theme.toml"]
