@@ -9,10 +9,13 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'junegunn/goyo.vim'
 Plugin 'tpope/vim-commentary'
-Plugin 'JuliaEditorSupport/julia-vim'
-Plugin 'tomlion/vim-solidity'
+" Plugin 'JuliaEditorSupport/julia-vim'
+" Plugin 'tomlion/vim-solidity'
 Plugin 'tpope/vim-fireplace'
-Plugin 'guns/vim-clojure-static' " syntax & indent
+" Plugin 'guns/vim-clojure-static' " syntax & indent
+Plugin 'jpalardy/vim-slime'
+Plugin 'guns/vim-sexp'
+Plugin 'tpope/vim-repeat'
 
 call vundle#end()                      " required
 filetype plugin indent on              " required
@@ -31,11 +34,20 @@ set incsearch
 set hlsearch
 set mouse=a
 
-" generate tags with: ctags -R .
-" check for tags in the directory of the current file
-" and also check upward through parent directories until it finds a tags file
-" or hits the root of the filesystem
-set tags=./tags,tags;
+" Tags
+" search order:
+" 1. local project 'tags'
+" 2. parent dirs (../../../ ... )
+" 3. language specific (go-tags, etc.)
+set tags=tags;
+" by lang BEGIN
+augroup LanguageTags
+  autocmd!
+  autocmd FileType python setlocal tags+=./.tags/python.tags
+  autocmd FileType go setlocal tags+=./.tags/go-mod.tags,~/.tags/go-stdlib.tags
+  autocmd FileType scheme,lisp,clojure,racket,guile setlocal tags+=./.tags/scheme.tags,~/.tags/chicken.tags
+augroup END
+" by lang END
 " BASE END
 
 " filetypez BEGIN
@@ -53,4 +65,34 @@ vnoremap <C-c> "*y :let @+=@*<CR>
 map <C-p> "*p
 
 " fireplace keymaps
-nmap <leader>ee cpp
+autocmd FileType clojure nmap <buffer> <leader>ee cpp
+" nmap <leader>ee cpp
+
+" --- LISPs ---
+" Scheme / Lisp basics
+autocmd FileType scheme,lisp,clojure,racket,guile setlocal lisp
+autocmd FileType scheme,lisp,clojure,racket,guile setlocal autoindent
+autocmd FileType scheme,lisp,clojure,racket,guile setlocal showmatch
+let g:slime_target = "tmux"
+let g:slime_default_config = {"socket_name": "default", "target_pane": ":.2"}
+let g:slime_bracketed_paste = 1
+let g:slime_python_ipython = 0
+
+function! SendForm()
+  let l:pos = getpos(".")
+  normal! vab
+  normal! "sy
+  call setpos('.', l:pos)
+  call slime#send(@s . "\n")
+endfunction
+
+augroup LispSlime
+  autocmd!
+  autocmd FileType scheme,lisp,clojure,racket,guile nnoremap <buffer> <leader>ee :call SendForm()<CR>
+  autocmd FileType scheme,lisp,clojure,racket,guile nnoremap <buffer> <leader>eb vip:call slime#send(getreg('"'))<CR>
+augroup END
+" augroup LispSlime
+"   autocmd!
+"   autocmd FileType scheme,lisp,clojure,racket,guile setlocal lisp
+"   autocmd FileType scheme,lisp,clojure,racket,guile nnoremap <buffer> <leader>ee :call SendForm()<CR>
+" augroup END

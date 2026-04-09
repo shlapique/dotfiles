@@ -1,0 +1,25 @@
+#!/bin/bash
+
+lang=("go" "python" "chicken")
+
+if command -v ctags &> /dev/null; then
+    echo "ctags is installed: $(command -v ctags)"
+else
+    echo "ctags is not installed"
+    exit 1
+fi
+
+picked_lang=$(printf '%s\n' "${lang[@]}" | dmenu -i -l 10 -p "Select language:")
+if [ -z "$picked_lang" ]; then
+    echo "None of the languages were selected. Exiting..."
+    exit 1
+fi
+
+case "$picked_lang" in
+    "go")            ctags -R --languages=Go --fields=+iaS --extras=+q -f "$HOME/.tags/go-stdlib.tags" "$(go env GOROOT)/src" && \
+                     ctags -R --languages=Go --fields=+iaS --extras=+q -f "$HOME/.tags/go-mod.tags" "$(go env GOPATH)/pkg/mod" ;; 
+    "python")        ctags -R --languages=Python . ;;
+    "chicken")       ctags -R --languages=Scheme -f "$HOME/.tags/chicken.tags" "$HOME/.cache/chicken-install/" ;; 
+esac
+
+echo "Tags generated for ${picked_lang}!"

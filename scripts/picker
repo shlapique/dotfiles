@@ -1,0 +1,7 @@
+#!/bin/bash
+
+tmp=$(mktemp)
+cat > "$tmp"
+vim "$tmp" </dev/tty >/dev/tty
+cat "$tmp"
+rm "$tmp"

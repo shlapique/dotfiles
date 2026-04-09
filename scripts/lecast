@@ -16,7 +16,7 @@ ffmpeg \
 -draw_mouse 0 \
 -s $(xrandr --current | grep -i '*' | awk '{print $1;}') \
 -i :0.0+0,0 \
--c:v libx264 \
+-c:v libopenh264 \
 -preset ultrafast -crf 25 \
 -c:a aac \
 -threads 0 \

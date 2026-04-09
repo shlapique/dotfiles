@@ -23,3 +23,8 @@ alias lf='lfub '
 alias vid='mpv av://v4l2:/dev/video0 --profile=low-latency --untimed'
 
 alias hey='hey "$(cat | iconv -f UTF-8 -t UTF-8//IGNORE)"'
+
+# for go
+alias gotags='ctags -R --languages=Go --fields=+iaS --extras=+q -f "$HOME/.tags/go-stdlib.tags" "$(go env GOROOT)/src" && ctags -R --languages=Go --fields=+iaS --extras=+q -f "$HOME/./tags/go-mod.tags" "$(go env GOPATH)/pkg/mod"'
+
+alias clck='date && date -u && TZ='America/New_York' date && TZ='America/Los_Angeles' date'

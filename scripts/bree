@@ -4,7 +4,8 @@
 # an easy way to control screen brightness on my laptop
 #
 
-device_path="/sys/class/backlight/amdgpu_bl1/"
+# device_path="/sys/class/backlight/amdgpu_bl1/"
+device_path="/sys/class/backlight/intel_backlight/"
 max_brightness=$(<"${device_path}max_brightness")
 
 brightness="$1"
@@ -22,7 +23,7 @@ fi
 val=$(perl -MPOSIX -e 'print floor($ARGV[0]*0.01*$ARGV[1])' "$brightness" "$max_brightness")
 
 if [ $? -eq 0 ]; then
-    sudo echo "$val" > "${device_path}brightness"
+    echo "$val" | sudo tee "${device_path}brightness" > /dev/null
 else
     echo "Smth went wrong"
     exit 1
