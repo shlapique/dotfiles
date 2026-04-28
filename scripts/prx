@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#
+# Switch xray configs
+#
+
+CYAN="\033[0;36m"
+YELLOW="\033[0;33m"
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+RESET="\033[0m"
+
+confs_dir="${HOME}/.config/xray"
+main_conf_path="/usr/local/etc/xray/config.json"
+main_cfg_sum="$(md5sum $main_conf_path | awk '{print $1}')"
+num_of_confs=$(find "$confs_dir" -maxdepth 1 -type f 2>/dev/null | wc -l)
+
+state_file="/tmp/xray_config_index"
+
+printf "${YELLOW}%5sNumber of configs available: ${num_of_confs}${RESET}\n"
+
+configs=("$confs_dir"/*)
+last_idx=$(cat "$state_file" 2>/dev/null || echo 0)
+
+total=${#configs[@]}
+next_idx=$(( (last_idx + 1) % total ))
+echo "$next_idx" > "$state_file"
+
+for i in $(seq 0 $((total - 1))); do
+    idx=$(( (next_idx + i) % total ))
+    cfg="${configs[$idx]}"
+    tmp_sum=$(md5sum "$cfg" | awk '{print $1}')
+    if [ "$tmp_sum" != "$main_cfg_sum" ]; then
+        sudo cp ${cfg} ${main_conf_path}
+        sudo systemctl restart xray.service
+        printf "${CYAN}%5sSwitched ${main_cfg_sum} -> ${tmp_sum} (${cfg})${RESET}\n"
+        break
+    fi
+done

@@ -54,3 +54,5 @@ export PATH="~/go/bin:$PATH"
 # guix
 # GUIX_PROFILE="$HOME/.guix-profile"
 # . "$GUIX_PROFILE/etc/profile"
+#
+set bell-style none

@@ -1,7 +1,7 @@
 let mapleader =" "
 
 " pluginz BEGIN
-set nocompatible                      " be iMproved, required
+set nocompatible                      " required
 filetype off                          " required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -12,10 +12,9 @@ Plugin 'tpope/vim-commentary'
 " Plugin 'JuliaEditorSupport/julia-vim'
 " Plugin 'tomlion/vim-solidity'
 Plugin 'tpope/vim-fireplace'
-" Plugin 'guns/vim-clojure-static' " syntax & indent
+Plugin 'guns/vim-clojure-static' " syntax & indent
 Plugin 'jpalardy/vim-slime'
-Plugin 'guns/vim-sexp'
-Plugin 'tpope/vim-repeat'
+" Plugin 'liquidz/elin'
 
 call vundle#end()                      " required
 filetype plugin indent on              " required
@@ -74,7 +73,7 @@ autocmd FileType scheme,lisp,clojure,racket,guile setlocal lisp
 autocmd FileType scheme,lisp,clojure,racket,guile setlocal autoindent
 autocmd FileType scheme,lisp,clojure,racket,guile setlocal showmatch
 let g:slime_target = "tmux"
-let g:slime_default_config = {"socket_name": "default", "target_pane": ":.2"}
+let g:slime_default_config = {"socket_name": "default", "target_pane": ":.1"}
 let g:slime_bracketed_paste = 1
 let g:slime_python_ipython = 0
 
@@ -88,11 +87,5 @@ endfunction
 
 augroup LispSlime
   autocmd!
-  autocmd FileType scheme,lisp,clojure,racket,guile nnoremap <buffer> <leader>ee :call SendForm()<CR>
-  autocmd FileType scheme,lisp,clojure,racket,guile nnoremap <buffer> <leader>eb vip:call slime#send(getreg('"'))<CR>
+  autocmd FileType scheme,lisp,racket,guile nnoremap <buffer> <leader>ee :call SendForm()<CR>
 augroup END
-" augroup LispSlime
-"   autocmd!
-"   autocmd FileType scheme,lisp,clojure,racket,guile setlocal lisp
-"   autocmd FileType scheme,lisp,clojure,racket,guile nnoremap <buffer> <leader>ee :call SendForm()<CR>
-" augroup END
