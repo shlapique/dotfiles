@@ -1,0 +1,85 @@
+#!/bin/bash
+
+#
+# private split-dns config for opensuse 
+# for Nebula Mesh clients
+#
+
+CYAN="\033[0;36m"
+YELLOW="\033[0;33m"
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+RESET="\033[0m"
+
+SERVICE_NAME="systemd-resolved.service"
+PKG_NAME="systemd-resolved"
+DNS_IP="192.168.100.69"
+DNS_ADDR="dns.home.lan"
+ZONE_PREFIX="~home.lan"
+
+function check_resolved() {
+    if systemctl is-enabled --quiet $SERVICE_NAME; then
+        return 0
+    else
+        printf "%b\n" "${YELLOW}warn: service '$SERVICE_NAME' not found.${RESET}"
+        return 1
+    fi
+}
+
+install_resolved() {
+    printf "%b\n" "${CYAN}Installing '$SERVICE_NAME'${RESET}"
+    sudo zypper --non-interactive in $PKG_NAME
+    if $?; then
+        printf "%b\n" "${CYAN}OK${RESET}"
+    else
+        printf "%b\n" "${RED}error: unable to install '$PKG_NAME' package${RESET}"
+        exit 1
+    fi
+}
+
+if check_resolved; then
+    printf "%b\n" "${CYAN}Found '$SERVICE_NAME'${RESET}"
+else
+    install_resolved
+    sudo systemctl enable $SERVICE_NAME --now
+fi
+
+if test -f "/etc/resolv.conf"; then
+    if [ -L "/etc/resolv.conf" ] && [ "$(readlink -f "/etc/resolv.conf")" = "/run/systemd/resolve/stub-resolv.conf" ]; then
+        printf "%b\n" "${YELLOW}warn: already /etc/resolv.conf -> /run/systemd/resolve/stub-resolv.conf"
+    else
+        sudo rm -f "/etc/resolv.conf"
+        printf "%b\n" "${CYAN}/etc/resolv.conf deleted${RESET}"
+        sudo ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+        printf "%b\n" "${CYAN}Symlink /etc/resolv.conf -> /run/systemd/resolve/stub-resolv.conf${RESET}"
+    fi
+else
+    printf "%b\n" "${RED}error: file /etc/resolv.conf not found! Smth is wrong with ur network: Fix it first!${RESET}"
+    exit 2
+fi
+
+if ! nmcli device show "nebula1"; then
+    printf "%b\n" "${RED}error: nebula1 device not found. Configure Nebula on this client first!${RESET}"
+    exit 2
+else
+    # check search config for nebula1
+    if nmcli device show "nebula1" | grep -q -i searches; then
+        dns_conf="$(nmcli device show "nebula1" | grep -i searches | awk '{print $NF}')"
+        printf "%b\n" "${YELLOW}warn: split dns already configured: $dns_conf. \nExiting${RESET}"
+        exit 0
+    else
+        printf "%b\n" "${CYAN}Configuring split dns with zone prefix $ZONE_PREFIX and dns on ip: $DNS_IP ${RESET}"
+        sudo nmcli connection modify "nebula1" ipv4.dns $DNS_IP ipv4.dns-search $ZONE_PREFIX ipv4.ignore-auto-dns yes
+        sudo systemctl restart NetworkManager
+    fi 
+fi
+
+if ! command -v dig &> /dev/null; then
+    printf "%b\n" "${YELLOW}warn: dig not found.${RESET}"
+    printf "%b\n" "${YELLOW}warn: install dig and check: dig @$DNS_IP $DNS_ADDR +short ${RESET}"
+    exit 0
+else
+    dig @$DNS_IP $DNS_ADDR +short
+fi
+
+printf "%b\n" "${GREEN}DONE${RESET}"

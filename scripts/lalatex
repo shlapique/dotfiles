@@ -19,5 +19,4 @@ echo $tex
 echo $c_url
 
 wget -q $c_url -O $fname
-chafa $fname
-
+sxiv $fname
