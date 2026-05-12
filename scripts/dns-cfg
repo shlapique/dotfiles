@@ -28,8 +28,7 @@ function check_resolved() {
 
 install_resolved() {
     printf "%b\n" "${CYAN}Installing '$SERVICE_NAME'${RESET}"
-    sudo zypper --non-interactive in $PKG_NAME
-    if $?; then
+    if sudo proxychains4 zypper --non-interactive install $PKG_NAME; then
         printf "%b\n" "${CYAN}OK${RESET}"
     else
         printf "%b\n" "${RED}error: unable to install '$PKG_NAME' package${RESET}"
