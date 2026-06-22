@@ -9,7 +9,11 @@ XTerm.vt100.translations: #override \n\
 Xcursor.theme: Adwaita
 Xcursor.size: 16
 
+XTerm*visualBell: false
 XTerm*bellIsUrgent: false
+XTerm*bellPercent: 0
+XTerm*bellVolume: 0
+XTerm*BellStyle: none
 
 !#define light
 

@@ -33,6 +33,8 @@ set incsearch
 set hlsearch
 set mouse=a
 
+set belloff=all
+
 " Tags
 " search order:
 " 1. local project 'tags'
@@ -42,8 +44,8 @@ set tags=tags;
 " by lang BEGIN
 augroup LanguageTags
   autocmd!
-  autocmd FileType python setlocal tags+=./.tags/python.tags
-  autocmd FileType go setlocal tags+=./.tags/go-mod.tags,~/.tags/go-stdlib.tags
+  autocmd FileType python setlocal tags+=~/.tags/python.tags
+  autocmd FileType go setlocal tags+=~/.tags/go-mod.tags,~/.tags/go-stdlib.tags
   autocmd FileType scheme,lisp,clojure,racket,guile setlocal tags+=./.tags/scheme.tags,~/.tags/chicken.tags
 augroup END
 " by lang END

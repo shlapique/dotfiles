@@ -16,6 +16,9 @@ test -s ~/.keys && . ~/.keys || true
 # set bg
 # . ~/.fehbg
 
+# bell off
+xset b off
+
 export PROMPT_COMMAND="history -a; history -n"
 
 # append to history file
@@ -54,5 +57,3 @@ export PATH="~/go/bin:$PATH"
 # guix
 # GUIX_PROFILE="$HOME/.guix-profile"
 # . "$GUIX_PROFILE/etc/profile"
-#
-set bell-style none
