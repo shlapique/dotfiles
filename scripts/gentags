@@ -9,7 +9,7 @@ else
     exit 1
 fi
 
-picked_lang=$(printf '%s\n' "${lang[@]}" | dmenu -i -l 10 -p "Select language:")
+picked_lang=$(printf '%s\n' "${lang[@]}" | bemenu -i -l 10 -p "Select language:")
 if [ -z "$picked_lang" ]; then
     echo "None of the languages were selected. Exiting..."
     exit 1

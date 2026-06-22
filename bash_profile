@@ -6,4 +6,4 @@ umask 022
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 export PATH="$PATH:$HOME/bin"
-[[ $(/usr/bin/tty) == '/dev/tty1' ]] && startx
+[[ $(/usr/bin/tty) == '/dev/tty1' ]] && sway

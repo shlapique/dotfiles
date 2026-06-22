@@ -1,24 +1,22 @@
 #!/bin/bash
-# screen + audio from screen + micro capturing
+# screen (wayland) + audio from screen + micro capturing
 
-pavucontrol & \
-killall -9 pavucontrol
+# pavucontrol & \
+# killall -9 pavucontrol
 
 dir=$HOME/Videos
 name=$(date | awk '{print $2 "-" $3 "-" $7}')
 
+MONITOR_SRC="$(pactl list short sources | grep 'monitor' | bemenu -i -l 10 'select monitor source')"
+INPUT_SRC="$(pactl list short sources | grep 'input' | bemenu -i -l 10 'select input source')"
+
 ffmpeg \
--f pulse -ac 2 -ar 96000 -i alsa_output.pci-0000_00_1b.0.iec958-stereo.monitor \
--f pulse -ac 1 -ar 48000 -i alsa_input.usb-046d_0825_7DB823D0-02.mono-fallback \
--filter_complex amix=inputs=2 \
--channel_layout stereo \
--f x11grab \
--framerate 30 \
--s $(xrandr --current | grep -i '*' | awk '{print $1;}') \
--i :0.0+0,0 \
--c:v libx264 \
--preset ultrafast -crf 25 \
--c:a aac \
--threads 0 \
--tune zerolatency \
-$dir/$name-$(($(ls $dir | grep $name | wc -l)+1)).mkv
+    -f pipewire -i pipewire: \
+    -f pulse -i "$MONITOR_SRC" \
+    -f pulse -i "$INPUT_SRC" \
+    -f x11grab \
+    -filter_complex "[1:a][2:a]amix=inputs=2:duration=longest[aout]" \
+    -map 0:v -map "[aout]" \
+    -c:v libx264 -preset ultrafast -crf 25 \
+    -c:a aac -b:a 128k \
+    $dir/$name-$(($(ls $dir | grep $name | wc -l)+1)).mkv

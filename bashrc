@@ -17,7 +17,7 @@ test -s ~/.keys && . ~/.keys || true
 # . ~/.fehbg
 
 # bell off
-xset b off
+# xset b off
 
 export PROMPT_COMMAND="history -a; history -n"
 

@@ -1,5 +1,5 @@
 alias open='xdg-open '
-alias copy='xclip -selection clipboard '
+alias copy='wl-copy '
 alias seo='xdg-open "$(fzf)" '
 alias shutdown='sudo shutdown -h now'
 alias scim='sc-im '
