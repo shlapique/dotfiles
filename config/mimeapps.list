@@ -64,8 +64,6 @@ video/H264=mpv.desktop
 video/x-matroska=mpv.desktop
 video/vnd.avi=mpv.desktop
 
-x-scheme-handler/discord-1216669957799018608=discord-1216669957799018608.desktop
-
 
 [Added Associations]
 application/x-wine-extension-osz=wine-extension-osr.desktop;

@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Sxiv
-Exec=sxiv %F
+Name=Swayimg
+Exec=swayimg %F
 Terminal=false
 Type=Application
 Keywords=Image
@@ -8,4 +8,3 @@ Icon=sxiv
 Categories=Utility;
 StartupNotify=false
 MimeType=image/png;image/jpeg;image/bmp;image/gif;image/svg+xml;image/plain;image/webp;image/rtf
-
